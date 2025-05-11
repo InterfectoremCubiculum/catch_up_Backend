@@ -19,6 +19,75 @@ The complete system also includes:
 -	Firebase Integration: Firebase support for additional services like push notifications.
 -	CORS Support: Configured to allow cross-origin requests for seamless frontend-backend communication.
 -	Swagger Documentation: Integrated Swagger/OpenAPI for API documentation and testing.
+-	File sharing/downloading.
+-	Archived and Deleted States.
+    <details>
+    <summary>Example</summary><br/>
+      
+    StateEnum State property is used to track the status (or lifecycle) of a FAQ entry using the StateEnum enum.
+    ```c#
+        public class FaqModel
+        {
+            [Key]
+            public int Id { get; set; }
+            public string Question { get; set; }
+            public string Answer { get; set; }
+            [ForeignKey("MaterialsId")]
+            public int? MaterialId { get; set; }
+            [ForeignKey("CreatorId")]
+            public Guid CreatorId { get; set; }
+            public StateEnum State { get; set; }
+            public FaqModel(string question, string answer, int? materialId, Guid creatorId)
+            {
+                this.Question = question;
+                this.Answer = answer;
+                this.MaterialId = materialId;
+                State = StateEnum.Active;
+                CreatorId = creatorId;
+            }
+        }
+    ```
+    <br/>
+    
+    State	Value	Meaning:
+ 	
+    - Active (0) - The entry is visible and currently in use.
+    - Archived (5) - The entry is no longer active, but kept for reference.
+    - Deleted (10) - The entry is logically deleted (soft delete) and not shown to users.\
+ 	  <br/>
+    
+    
+    ```c#
+        public enum StateEnum
+        {
+            Active = 0,
+            Archived = 5,
+            Deleted = 10
+        }
+    ```
+
+    Example of soft Delete.
+ 	
+    ```c#
+        public async Task<bool> DeleteAsync(int faqId)
+        {
+            var faq = await _context.Faqs.FindAsync(faqId);
+            if (faq == null)
+                return false;
+            try
+            {
+                faq.State = StateEnum.Deleted;
+                _context.Faqs.Update(faq);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: Faq Delete: " + ex);
+            }
+            return true;
+        }
+    ```
+    </details>
 
 ## Technologies Used
 - .NET 8
