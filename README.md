@@ -27,7 +27,7 @@ The complete system also includes:
 - Firebase Admin SDK
 - JWT Authentication
 - <details> <summary>Swagger/OpenAPI</summary>
-![image](https://github.com/user-attachments/assets/9eb219f5-ab2f-437c-a676-402264500f62)
+<img src="https://github.com/user-attachments/assets/9eb219f5-ab2f-437c-a676-402264500f62">
 </details>
 - SMTP for email notifications
 ## Project Structure
