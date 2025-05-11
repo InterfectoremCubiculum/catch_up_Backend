@@ -5,7 +5,7 @@
 Catch-Up Backend is a web application designed to assist with onboarding. This project represents only the backend part of the entire application.
 The complete system also includes:
 
-- [Frontend](https://github.com/InterfectoremCubiculum/catch_up_frontend) built with React
+- [Frontend](https://github.com/InterfectoremCubiculum/catch_up_frontend) built with React and głupi ryj kosaka
 - [Mobile app](https://github.com/InterfectoremCubiculum/catch_up_Mobile) developed using .NET MAUI
   
 
