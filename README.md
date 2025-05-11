@@ -26,7 +26,9 @@ The complete system also includes:
 - SignalR for real-time communication
 - Firebase Admin SDK
 - JWT Authentication
-- Swagger/OpenAPI
+- <details> <summary>Swagger/OpenAPI</summary>
+![image](https://github.com/user-attachments/assets/9eb219f5-ab2f-437c-a676-402264500f62)
+</details>
 - SMTP for email notifications
 ## Project Structure
 - Controllers: Handle API logic (e.g., NewbieMentorController for managing mentor assignments).
