@@ -28,6 +28,8 @@ The complete system also includes:
 - JWT Authentication
   <details> 
   <summary>See more</summary><br/>
+    
+   #### This code registers and configures JWT Bearer Authentication in an ASP.NET Core app
   
     ```c#
      //Authentication
@@ -55,6 +57,7 @@ The complete system also includes:
            };
        });
     ```
+    #### This is a helper method to manually extract the userId from a JWT token found in the request.
     ```c#
         public static class TokenHelper
         {
@@ -69,6 +72,7 @@ The complete system also includes:
             }
         }
     ```
+    #### Exmple of use
     ```c#
       [HttpGet]
       [Route("GetUserSchooling/{schoolingId:int}")]
@@ -95,11 +99,97 @@ The complete system also includes:
 - Controllers: Handle API logic (e.g., NewbieMentorController for managing mentor assignments).
   <details>
     <summary>Example</summary><br/>
-    <img src="https://github.com/user-attachments/assets/5f0a8cef-284c-4488-bbe4-b892d641a3c4"
+    <img src="https://github.com/user-attachments/assets/5f0a8cef-284c-4488-bbe4-b892d641a3c4">
   </details>
 - Services: Contain business logic (e.g., EmailService, NotificationService).
+  <details>
+    <summary>Example</summary><br/>
+    <img src="https://github.com/user-attachments/assets/36c36558-a2ed-4a3e-9d9a-2a9521a473c5">
+    <img src="https://github.com/user-attachments/assets/11360c91-f827-4078-8884-aa0bddda6bbb">
+  </details>
 - Repositories: Interfaces and implementations for data access.
+  <details>
+    <summary>Example</summary><br/>
+    <img src="https://github.com/user-attachments/assets/c90cb82e-fb38-4701-b69d-5915c7e97cf8">
+  </details>
 - Models: Definitions of data structures (e.g., UserModel, NewbieMentorModel).
+  <details>
+    <summary>Example</summary><br/>
+    <img src="https://github.com/user-attachments/assets/b33308fd-3949-4905-9ae2-2dafaadf8611">
+  </details>
 - Migrations: Handle changes to the database schema.
+  <details>
+    <summary>Example</summary><br/>
+    <img src="https://github.com/user-attachments/assets/e6676ae1-bf01-4ae8-9dcb-4b3667027d14">
+  </details>
 - Hubs: Handle real-time communication (e.g., NotificationHub).
+  <details>
+  <summary>See more</summary><br/>
+    
+  ```c#
+      public class NotificationHub : Hub
+      {
+          private readonly IRefreshTokenRepository _refreshTokenRepository;
+      
+          public NotificationHub(IRefreshTokenRepository refreshTokenRepository)
+          {
+              _refreshTokenRepository = refreshTokenRepository;
+          }
+      
+          public override async Task OnConnectedAsync() 
+          {
+      
+              var accessToken = Context.GetHttpContext()?.Request?.Query["access_token"].ToString();
+            
+              Guid userId;
+      
+              if (string.IsNullOrEmpty(accessToken))
+              {
+                  userId = TokenHelper.GetUserIdFromTokenInRequest(Context.GetHttpContext()?.Request);
+              }
+              else
+              {
+                  var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+                  userId = Guid.Parse(jwtToken.Claims.First(c => c.Type == "nameid").Value);
+              }
+      
+              await Groups.AddToGroupAsync(Context.ConnectionId, userId.ToString());
+      
+              await base.OnConnectedAsync();
+          }
+      
+          public override async Task OnDisconnectedAsync(Exception exception)
+          {
+              var accessToken = Context.GetHttpContext()?.Request?.Query["access_token"].ToString();
+              var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+              var userId = Guid.Parse(jwtToken.Claims.First(c => c.Type == "nameid").Value);
+      
+              await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId.ToString());
+      
+              await base.OnDisconnectedAsync(exception);
+          }
+      }
+  ```
+  </details>
 - DTO (Data Transfer Object): Used for transferring data between layers of the application. Allow for the separation of business logic from the data transmitted via the API.
+  <details>
+    <summary>Example</summary><br/>
+    
+    ```c#
+      public class RoadMapDto
+      {
+          public int Id { get; set; }
+          public Guid NewbieId { get; set; }
+          public Guid CreatorId { get; set; }
+          public string? CreatorName { get; set; }
+          public string? Title { get; set; }
+          public string? Description { get; set; }
+          public DateTime? AssignDate { get; set; }
+          public DateTime? FinishDate { get; set; }
+          public StatusEnum? Status { get; set; }
+          public decimal? Progress { get; set; }
+      }
+    ```
+  </details>
+<br/><br/>
+<img src="https://github.com/user-attachments/assets/6213ab23-acd7-440f-aa7c-f25d923b9b42">
